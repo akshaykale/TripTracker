@@ -1,4 +1,4 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.utils;
 
 import android.content.Context;
 import android.os.Bundle;

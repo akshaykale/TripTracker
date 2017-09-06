@@ -9,9 +9,9 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.akshaykale.triptracker.FirebaseDataManager;
-import com.akshaykale.triptracker.LocalDataStorageManager;
-import com.akshaykale.triptracker.MTripPoint;
+import com.akshaykale.triptracker.utils.FirebaseDataManager;
+import com.akshaykale.triptracker.utils.LocalDataStorageManager;
+import com.akshaykale.triptracker.model.MTripPoint;
 import com.akshaykale.triptracker.MainActivity;
 import com.akshaykale.triptracker.R;
 

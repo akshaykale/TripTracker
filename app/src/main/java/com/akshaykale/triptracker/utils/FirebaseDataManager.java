@@ -1,5 +1,8 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.utils;
 
+import com.akshaykale.triptracker.model.MTrip;
+import com.akshaykale.triptracker.model.MTripPoint;
+import com.akshaykale.triptracker.model.MUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;

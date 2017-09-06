@@ -1,4 +1,4 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.model;
 
 import java.util.ArrayList;
 

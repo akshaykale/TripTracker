@@ -1,7 +1,9 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.utils;
 
 import android.content.SharedPreferences;
 import android.net.Uri;
+
+import com.akshaykale.triptracker.TripTrackerApplication;
 
 /**
  * Created by akshay.kale on 23/05/2017.

@@ -1,4 +1,4 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.model;
 
 /**
  * Created by akshay.kale on 17/08/2017.
