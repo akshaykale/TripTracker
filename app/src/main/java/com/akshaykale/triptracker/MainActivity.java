@@ -39,15 +39,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     /**
-     * The desired interval for location updates. Inexact. Updates may be more or less frequent.
+     * The desired interval for location updates. Inexact. Updates may be more or less frequent. 2 Min
      */
-    private static final long UPDATE_INTERVAL = 10 * 1000;
+    private static final long UPDATE_INTERVAL = 60 * 1000;
 
     /**
      * The fastest rate for active location updates. Updates will never be more frequent
      * than this value, but they may be less frequent.
      */
     private static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
+
+    /**
+     * Set the minimum displacement between location updates in meters // 5 meters
+     */
+    private static final long SMALLEST_DISPLACEMENT = 5;
 
     /**
      * The max time before batched results are delivered by location services. Results may be
@@ -64,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * The entry point to Google Play Services.
      */
     private GoogleApiClient mGoogleApiClient;
+
+    private FirebaseDataManager firebaseDataManager;
 
     // UI Widgets.
     private Button mRequestUpdatesButton;
@@ -85,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (!checkPermissions()) {
             requestPermissions();
         }
+
+        firebaseDataManager = new FirebaseDataManager();
 
         buildGoogleApiClient();
 
@@ -139,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
         // Sets the maximum time when batched location updates are delivered. Updates may be
         // delivered sooner than this interval.
         mLocationRequest.setMaxWaitTime(MAX_WAIT_TIME);
@@ -334,6 +343,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             LocationRequestHelper.setRequesting(this, true);
             LocationServices.FusedLocationApi.requestLocationUpdates(
                     mGoogleApiClient, mLocationRequest, getPendingIntent());
+            //Save to firebase
+            //Create a new trip
+            firebaseDataManager.createTrip(new MTrip());
         } catch (SecurityException e) {
             LocationRequestHelper.setRequesting(this, false);
             e.printStackTrace();
@@ -348,6 +360,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         LocationRequestHelper.setRequesting(this, false);
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
                 getPendingIntent());
+        //End the current trip
+        String tripId = LocalDataStorageManager.getInstance().currentTripId();
+        if (!tripId.equals(""))
+            firebaseDataManager.endCurrentTrip(tripId);
     }
 
     private PendingIntent getPendingIntent() {

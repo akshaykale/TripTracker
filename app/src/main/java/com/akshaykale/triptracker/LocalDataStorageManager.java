@@ -59,4 +59,12 @@ public class LocalDataStorageManager {
         editor.putLong("tracking_end_time", tid);
         editor.apply();
     }
+
+    public void currentTripId(String key) {
+        editor.putString("trip_id", key);
+        editor.apply();
+    }
+    public String currentTripId(){
+        return sharedPreferences.getString("trip_id","");
+    }
 }

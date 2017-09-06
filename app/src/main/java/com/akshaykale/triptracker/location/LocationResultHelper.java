@@ -9,6 +9,9 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 
+import com.akshaykale.triptracker.FirebaseDataManager;
+import com.akshaykale.triptracker.LocalDataStorageManager;
+import com.akshaykale.triptracker.MTripPoint;
 import com.akshaykale.triptracker.MainActivity;
 import com.akshaykale.triptracker.R;
 
@@ -54,6 +57,7 @@ public class LocationResultHelper {
         if (mLocations.isEmpty()) {
             return mContext.getString(R.string.unknown_location);
         }
+        FirebaseDataManager firebaseDataManager = new FirebaseDataManager();
         StringBuilder sb = new StringBuilder();
         for (Location location : mLocations) {
             sb.append("(");
@@ -62,6 +66,16 @@ public class LocationResultHelper {
             sb.append(location.getLongitude());
             sb.append(")");
             sb.append("\n");
+
+            String tid = LocalDataStorageManager.getInstance().currentTripId();
+            if (tid.equals(""))
+                return tid;
+            //save to firebase
+            MTripPoint mTripPoint = new MTripPoint(location.getLatitude(),location.getLongitude());
+            mTripPoint.speed = location.getSpeed();
+            mTripPoint.accuracy = location.getAccuracy();
+            mTripPoint.altitude = location.getAltitude();
+            firebaseDataManager.pushTripPoint(tid,mTripPoint);
         }
         return sb.toString();
     }
@@ -75,6 +89,7 @@ public class LocationResultHelper {
                 .putString(KEY_LOCATION_UPDATES_RESULT, getLocationResultTitle() + "\n" +
                         getLocationResultText())
                 .apply();
+
     }
 
     /**
