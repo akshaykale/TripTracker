@@ -22,4 +22,5 @@
     <string name="default_channel">Default channel</string>
 
     <string name="facebook_app_id">111078206265409</string>
+    <string name="action_trip_switch">Trip status</string>
 </resources>

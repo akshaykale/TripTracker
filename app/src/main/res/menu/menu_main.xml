@@ -6,5 +6,11 @@
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:title="@string/action_logout"
-        app:showAsAction="never" />
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_trip_switch"
+        android:title="@string/action_trip_switch"
+        app:showAsAction="always"
+        app:actionViewClass="android.widget.Switch"/>
 </menu>

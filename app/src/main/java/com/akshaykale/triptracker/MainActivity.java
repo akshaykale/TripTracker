@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.akshaykale.triptracker.location.LocationRequestHelper;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private Button mRequestUpdatesButton;
     private Button mRemoveUpdatesButton;
     private TextView mLocationUpdatesResultView;
+    private Switch switchTripStatus = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        updateButtonsState(LocationRequestHelper.getRequesting(this));
+        //updateButtonsState(LocationRequestHelper.getRequesting(this));
         mLocationUpdatesResultView.setText(LocationResultHelper.getSavedLocationResult(this));
     }
 
@@ -183,23 +186,32 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem toggelSwitch = menu.findItem(R.id.action_trip_switch);
+
+        switchTripStatus = (Switch) toggelSwitch.getActionView();
+        switchTripStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                showSnackbar("Switch=> "+b);
+                if (b && !LocationRequestHelper.getRequesting(getApplicationContext())){
+                    requestLocationUpdates(null);
+                }else if (!b && LocationRequestHelper.getRequesting(getApplicationContext())){
+                    removeLocationUpdates(null);
+                }
+            }
+        });
+        updateButtonsState(LocationRequestHelper.getRequesting(this));
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -384,9 +396,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (requestingLocationUpdates) {
             mRequestUpdatesButton.setEnabled(false);
             mRemoveUpdatesButton.setEnabled(true);
+            switchTripStatus.setChecked(true);
         } else {
             mRequestUpdatesButton.setEnabled(true);
             mRemoveUpdatesButton.setEnabled(false);
+            switchTripStatus.setChecked(false);
         }
     }
 }
