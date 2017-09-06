@@ -48,4 +48,12 @@ public class FirebaseDataManager {
         map1.put("end_time",LocalDataStorageManager.getInstance().getTrackEndTime(0));
         userTripsRef.setValue(map1);
     }
+
+    public void pushTripPoint(String tripId){
+
+    }
+
+    public void saveUserInfo(MUser user){
+        userDbRef.setValue(user);
+    }
 }

@@ -73,6 +73,12 @@ public class LoginActivity extends Activity implements FacebookCallback<LoginRes
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mFirebaseAuth.getCurrentUser();
                             if (user != null){
+                                //save user
+                                new FirebaseDataManager().saveUserInfo(new MUser(
+                                        user.getDisplayName(),
+                                        user.getEmail(),
+                                        user.getPhotoUrl().toString()
+                                ));
                                 launchMainActivity();
                             }
                         } else {
@@ -91,7 +97,7 @@ public class LoginActivity extends Activity implements FacebookCallback<LoginRes
 
     private void launchMainActivity() {
 
-        //save user
+
 
         progressDialog.dismiss();
         Intent mainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);

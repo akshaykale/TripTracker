@@ -16,6 +16,5 @@ public class MTripPoint {
     public long timestamp;
 
     public String picture_url;
-    public String picture_device_path;
 
 }
