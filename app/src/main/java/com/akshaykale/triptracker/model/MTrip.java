@@ -15,6 +15,8 @@ public class MTrip {
     public long start_time;
     public long end_time;
 
+    public float total_distance;
+
     ArrayList<MTripPoint> trip_points;
 
     public MTrip() {
@@ -24,5 +26,6 @@ public class MTrip {
         start_time = System.currentTimeMillis();
         end_time = 0;
         trip_points = new ArrayList<>();
+        total_distance = 0f;
     }
 }

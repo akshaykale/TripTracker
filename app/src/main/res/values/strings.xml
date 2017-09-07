@@ -23,4 +23,6 @@
 
     <string name="facebook_app_id">111078206265409</string>
     <string name="action_trip_switch">Trip status</string>
+
+    <string name="google_maps_key">AIzaSyASCYRS-XAAGrgf6eV9GKnHppzUCq0bnVM</string>
 </resources>

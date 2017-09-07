@@ -6,4 +6,7 @@
 
     <dimen name="default_margin">20dp</dimen>
     <dimen name="text_large">24sp</dimen>
+
+    <dimen name="bottom_menu_image_padding">5.0dip</dimen>
+    <dimen name="bottom_nav_menu_height">50.0dip</dimen>
 </resources>

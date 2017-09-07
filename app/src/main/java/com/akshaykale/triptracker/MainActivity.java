@@ -11,8 +11,11 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -30,6 +33,7 @@ import com.akshaykale.triptracker.location.LocationUpdatesBroadcastReceiver;
 import com.akshaykale.triptracker.model.MTrip;
 import com.akshaykale.triptracker.utils.FirebaseDataManager;
 import com.akshaykale.triptracker.utils.LocalDataStorageManager;
+import com.akshaykale.triptracker.utils.ui.BottomNavigationViewEx;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,9 +41,12 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        SharedPreferences.OnSharedPreferenceChangeListener{
+        SharedPreferences.OnSharedPreferenceChangeListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -47,34 +54,28 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * The desired interval for location updates. Inexact. Updates may be more or less frequent. 2 Min
      */
     private static final long UPDATE_INTERVAL = 60 * 1000;
-
     /**
      * The fastest rate for active location updates. Updates will never be more frequent
      * than this value, but they may be less frequent.
      */
     private static final long FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2;
-
     /**
      * Set the minimum displacement between location updates in meters // 5 meters
      */
     private static final long SMALLEST_DISPLACEMENT = 5;
-
     /**
      * The max time before batched results are delivered by location services. Results may be
      * delivered sooner than this interval.
      */
     private static final long MAX_WAIT_TIME = UPDATE_INTERVAL * 3;
-
     /**
      * Stores parameters for requests to the FusedLocationProviderApi.
      */
     private LocationRequest mLocationRequest;
-
     /**
      * The entry point to Google Play Services.
      */
     private GoogleApiClient mGoogleApiClient;
-
     private FirebaseDataManager firebaseDataManager;
 
     // UI Widgets.
@@ -83,16 +84,25 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private TextView mLocationUpdatesResultView;
     private Switch switchTripStatus = null;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.bottom_nav_menu)
+    BottomNavigationViewEx bottomNavigationView;
+    private int currentFragment = R.id.action_home;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        mRequestUpdatesButton = (Button) findViewById(R.id.request_updates_button);
-        mRemoveUpdatesButton = (Button) findViewById(R.id.remove_updates_button);
-        mLocationUpdatesResultView = (TextView) findViewById(R.id.location_updates_result);
+        //Bottom menu
+        bottomNavigationView.enableAnimation(true);
+        bottomNavigationView.enableShiftingMode(false);
+        bottomNavigationView.setTextVisibility(false);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
         // Check if the user revoked runtime permissions.
         if (!checkPermissions()) {
@@ -147,16 +157,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-
         mLocationRequest.setInterval(UPDATE_INTERVAL);
-
-        // Sets the fastest rate for active location updates. This interval is exact, and your
-        // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
-        // Sets the maximum time when batched location updates are delivered. Updates may be
-        // delivered sooner than this interval.
         mLocationRequest.setMaxWaitTime(MAX_WAIT_TIME);
     }
 
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onResume() {
         super.onResume();
         //updateButtonsState(LocationRequestHelper.getRequesting(this));
-        mLocationUpdatesResultView.setText(LocationResultHelper.getSavedLocationResult(this));
+        //mLocationUpdatesResultView.setText(LocationResultHelper.getSavedLocationResult(this));
     }
 
     @Override
@@ -184,19 +188,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem toggelSwitch = menu.findItem(R.id.action_trip_switch);
-
         switchTripStatus = (Switch) toggelSwitch.getActionView();
         switchTripStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 showSnackbar("Switch=> "+b);
                 if (b && !LocationRequestHelper.getRequesting(getApplicationContext())){
-                    requestLocationUpdates(null);
+                    requestLocationUpdates();
                 }else if (!b && LocationRequestHelper.getRequesting(getApplicationContext())){
-                    removeLocationUpdates(null);
+                    removeLocationUpdates();
+                }
+                if (currentFragment == R.id.action_home){
+                    loadInitialFragment();
                 }
             }
         });
@@ -210,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (id == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             LoginManager.getInstance().logOut();
+            LocalDataStorageManager.getInstance().clear();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -249,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      * @param text The Snackbar text.
      */
     private void showSnackbar(final String text) {
-        View container = findViewById(R.id.activity_main);
+        View container = findViewById(R.id.bottom_nav_menu);
         if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show();
         }
@@ -273,16 +279,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 buildGoogleApiClient();
             } else {
                 // Permission denied.
+                /**
+                 * Notify the user via a SnackBar that they have rejected a core permission for the
+                 app, which makes the Activity useless. In a real app, core permissions would
+                 typically be best requested during a welcome-screen flow.
 
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
+                 Additionally, it is important to remember that a permission might have been
+                 rejected without asking the user for permission (device policy or "Never ask
+                 again" prompts). Therefore, a user interface affordance is typically implemented
+                 when permissions are denied. Otherwise, your app could appear unresponsive to
+                 touches or interactions which have required permissions.
+                 */
                 Snackbar.make(
                         findViewById(R.id.fab),
                         R.string.permission_denied_explanation,
@@ -320,8 +327,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_FINE_LOCATION);
 
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             Snackbar.make(
@@ -340,9 +345,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .show();
         } else {
             Log.i(TAG, "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_PERMISSIONS_REQUEST_CODE);
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Handles the Request Updates button and requests start of location updates.
      */
-    public void requestLocationUpdates(View view) {
+    public void requestLocationUpdates() {
         try {
             Log.i(TAG, "Starting location updates");
             LocationRequestHelper.setRequesting(this, true);
@@ -370,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Handles the Remove Updates button, and requests removal of location updates.
      */
-    public void removeLocationUpdates(View view) {
+    public void removeLocationUpdates() {
         Log.i(TAG, "Removing location updates");
         LocationRequestHelper.setRequesting(this, false);
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
@@ -394,13 +396,60 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private void updateButtonsState(boolean requestingLocationUpdates) {
         if (requestingLocationUpdates) {
-            mRequestUpdatesButton.setEnabled(false);
-            mRemoveUpdatesButton.setEnabled(true);
+            //mRequestUpdatesButton.setEnabled(false);
+            //mRemoveUpdatesButton.setEnabled(true);
             switchTripStatus.setChecked(true);
         } else {
-            mRequestUpdatesButton.setEnabled(true);
-            mRemoveUpdatesButton.setEnabled(false);
+            //mRequestUpdatesButton.setEnabled(true);
+            //mRemoveUpdatesButton.setEnabled(false);
             switchTripStatus.setChecked(false);
         }
+    }
+
+    /**
+     * Called when an item in the bottom navigation menu is selected.
+     *
+     * @param item The selected item
+     * @return true to display the item as the selected item and false if the item should not
+     * be selected. Consider setting non-selectable items as disabled preemptively to
+     * make them appear non-interactive.
+     */
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_home:
+                currentFragment = item.getItemId();
+                loadInitialFragment();
+                break;
+            /*case R.id.action_search:
+                currentFragment = item.getItemId();
+                loadFragment(new SearchFragment());
+                break;
+            case R.id.action_camera:
+                startActivity(new Intent(this, CameraActivity.class));
+                break;
+            case R.id.action_map:
+                currentFragment = item.getItemId();
+                loadFragment(new MapFragment());
+                break;
+            case R.id.action_settings:
+                break;*/
+        }
+        return true;
+    }
+
+    private void loadInitialFragment() {
+        if (LocationRequestHelper.getRequesting(getApplicationContext())){
+            loadFragment(TrackingFragment.getInstance(LocalDataStorageManager.getInstance().currentTripId()));
+        }else {
+            loadFragment(HomeFragment.getInstance());
+        }
+    }
+
+    private void loadFragment(Fragment newFragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+        //transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

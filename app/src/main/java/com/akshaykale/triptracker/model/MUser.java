@@ -11,6 +11,8 @@ public class MUser {
     String photo_url;
     long last_login;
 
+    public MUser(){}
+
     public MUser(String name, String email) {
         this.display_name = name;
         this.email = email;

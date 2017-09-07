@@ -23,7 +23,6 @@ public class LocalDataStorageManager {
                 getSharedPreferences(TAG, TripTrackerApplication.getAppContext().MODE_PRIVATE);
 
         editor = sharedPreferences.edit();
-
     }
 
     public static LocalDataStorageManager getInstance(){
@@ -35,30 +34,6 @@ public class LocalDataStorageManager {
 
     public void clear(){
         editor.clear();
-        editor.apply();
-    }
-
-    public String getTrackID(String x){
-        return sharedPreferences.getString("tracking_id",x);
-    }
-    public void setTrackID(String tid){
-        editor.putString("tracking_id", tid);
-        editor.apply();
-    }
-
-    public long getTrackStartTime(long x){
-        return sharedPreferences.getLong("tracking_start_time",x);
-    }
-    public void setTrackStartTime(long tid){
-        editor.putLong("tracking_start_time", tid);
-        editor.apply();
-    }
-
-    public long getTrackEndTime(long x){
-        return sharedPreferences.getLong("tracking_end_time",x);
-    }
-    public void setTrackEndTime(long tid){
-        editor.putLong("tracking_end_time", tid);
         editor.apply();
     }
 

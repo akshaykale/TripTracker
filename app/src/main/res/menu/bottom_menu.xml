@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:icon="@drawable/ico_nearme_48_black" android:id="@+id/action_home" android:title="Current tracking" />
+    <item android:icon="@drawable/ico_timeline_48_black" android:id="@+id/action_timeline" android:title="Timeline" />
+    <item android:icon="@drawable/ico_user_48_black" android:id="@+id/action_userprofile" android:title="User Profile" />
+
+    <!--    <item android:icon="@drawable/ico_search_96_grey" android:id="@+id/action_search" android:title="@string/menu_search" />
+        <item android:icon="@drawable/ico_camera_96_grey" android:id="@+id/action_camera" android:title="@string/menu_camera" />
+        <item android:icon="@drawable/ico_near_me_96_grey" android:id="@+id/action_map" android:title="@string/menu_map" />
+        <item android:icon="@drawable/ico_settings_96_grey" android:id="@+id/action_settings" android:title="@string/menu_setting" />-->
+</menu>

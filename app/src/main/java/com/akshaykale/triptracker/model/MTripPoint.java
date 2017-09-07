@@ -17,6 +17,8 @@ public class MTripPoint {
 
     public String picture_url;
 
+    public MTripPoint(){}
+
     public MTripPoint(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
