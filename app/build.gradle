@@ -58,7 +58,7 @@ dependencies {
     compile 'com.google.firebase:firebase-database:11.2.0'
 
     //timeline
-    compile 'com.akshaykale.android:android-timeline-view:1.1'
+    compile 'com.akshaykale.android:android-timeline-view:2.1'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {

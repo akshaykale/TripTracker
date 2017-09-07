@@ -6,7 +6,8 @@
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"
+        android:layout_marginTop="?attr/actionBarSize"/>
 
     <com.akshaykale.triptracker.utils.ui.BottomNavigationViewEx
         android:id="@+id/bottom_nav_menu"

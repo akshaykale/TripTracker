@@ -22,17 +22,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
 
+import com.akshaykale.triptracker.fragments.HomeFragment;
+import com.akshaykale.triptracker.fragments.TrackingFragment;
+import com.akshaykale.triptracker.fragments.TripTimelineFragment;
 import com.akshaykale.triptracker.location.LocationRequestHelper;
 import com.akshaykale.triptracker.location.LocationResultHelper;
 import com.akshaykale.triptracker.location.LocationUpdatesBroadcastReceiver;
 import com.akshaykale.triptracker.model.MTrip;
-import com.akshaykale.triptracker.utils.FirebaseDataManager;
 import com.akshaykale.triptracker.utils.LocalDataStorageManager;
+import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
 import com.akshaykale.triptracker.utils.ui.BottomNavigationViewEx;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.common.ConnectionResult;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent. 2 Min
      */
-    private static final long UPDATE_INTERVAL = 60 * 1000;
+    private static final long UPDATE_INTERVAL = 30 * 1000;
     /**
      * The fastest rate for active location updates. Updates will never be more frequent
      * than this value, but they may be less frequent.
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Set the minimum displacement between location updates in meters // 5 meters
      */
-    private static final long SMALLEST_DISPLACEMENT = 5;
+    private static final long SMALLEST_DISPLACEMENT = 1;
     /**
      * The max time before batched results are delivered by location services. Results may be
      * delivered sooner than this interval.
@@ -77,19 +78,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
      */
     private GoogleApiClient mGoogleApiClient;
     private FirebaseDataManager firebaseDataManager;
+    private int currentFragment = R.id.action_home;
 
     // UI Widgets.
-    private Button mRequestUpdatesButton;
-    private Button mRemoveUpdatesButton;
-    private TextView mLocationUpdatesResultView;
     private Switch switchTripStatus = null;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
     @BindView(R.id.bottom_nav_menu)
     BottomNavigationViewEx bottomNavigationView;
-    private int currentFragment = R.id.action_home;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
         if (s.equals(LocationResultHelper.KEY_LOCATION_UPDATES_RESULT)) {
-            mLocationUpdatesResultView.setText(LocationResultHelper.getSavedLocationResult(this));
+            //mLocationUpdatesResultView.setText(LocationResultHelper.getSavedLocationResult(this));
         } else if (s.equals(LocationRequestHelper.KEY_LOCATION_UPDATES_REQUESTED)) {
             updateButtonsState(LocationRequestHelper.getRequesting(this));
         }
@@ -421,11 +417,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 currentFragment = item.getItemId();
                 loadInitialFragment();
                 break;
-            /*case R.id.action_search:
+            case R.id.action_timeline:
                 currentFragment = item.getItemId();
-                loadFragment(new SearchFragment());
+                loadFragment(TripTimelineFragment.getInstance());
                 break;
-            case R.id.action_camera:
+            /*case R.id.action_camera:
                 startActivity(new Intent(this, CameraActivity.class));
                 break;
             case R.id.action_map:

@@ -1,4 +1,4 @@
-package com.akshaykale.triptracker;
+package com.akshaykale.triptracker.login;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -9,8 +9,10 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.akshaykale.triptracker.MainActivity;
+import com.akshaykale.triptracker.R;
 import com.akshaykale.triptracker.model.MUser;
-import com.akshaykale.triptracker.utils.FirebaseDataManager;
+import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
