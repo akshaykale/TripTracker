@@ -1,5 +1,6 @@
 package com.akshaykale.triptracker.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import com.akshaykale.swipetimeline.TimelineGroupType;
 import com.akshaykale.swipetimeline.TimelineObject;
 import com.akshaykale.swipetimeline.TimelineObjectClickListener;
 import com.akshaykale.triptracker.R;
+import com.akshaykale.triptracker.TripDetailsActivity;
 import com.akshaykale.triptracker.model.MTrip;
 import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
 import com.akshaykale.triptracker.utils.firebase.IFTripsListener;
@@ -70,7 +72,10 @@ public class TripTimelineFragment extends Fragment implements TimelineObjectClic
 
     @Override
     public void onTimelineObjectClicked(TimelineObject timelineObject) {
-
+        MTrip trip = (MTrip) timelineObject;
+        Intent intent = new Intent(getActivity(), TripDetailsActivity.class);
+        intent.putExtra("tripid",trip.trip_id);
+        startActivity(intent);
     }
 
     @Override

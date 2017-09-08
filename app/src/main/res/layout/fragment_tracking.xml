@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@drawable/round_corner_back_white"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:orientation="vertical"
         android:elevation="5dp">
 
@@ -24,20 +24,22 @@
             android:orientation="horizontal"
             android:layout_margin="5dp"
             >
-
-            <EditText
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Name this trip"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="normal" />
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -96,7 +98,69 @@
                     android:text="Travel" />
             </LinearLayout>
         </LinearLayout>
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorGrey"
+            android:layout_margin="5dp"/>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:layout_margin="5dp"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ico_length_48_grey" />
+                <TextView
+                    android:id="@+id/tv_trip_details_distance"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="2dp"
+                    android:layout_marginLeft="15dp"
+                    android:text="Travel" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:layout_margin="5dp"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ico_clock_48_grey" />
+                <TextView
+                    android:id="@+id/tv_trip_details_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:padding="2dp"
+                    android:layout_marginLeft="15dp"
+                    android:text="Travel" />
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_margin="5dp"
+        android:src="@drawable/ico_edit_48_white"/>
 
 </RelativeLayout>

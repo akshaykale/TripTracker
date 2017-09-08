@@ -39,6 +39,9 @@
         <activity android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".TripDetailsActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <service
             android:name=".location.LocationUpdatesIntentService"
             android:exported="false" />
