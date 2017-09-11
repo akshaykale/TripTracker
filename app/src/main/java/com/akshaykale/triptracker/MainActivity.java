@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * The desired interval for location updates. Inexact. Updates may be more or less frequent. 2 Min
      */
-    private static final long UPDATE_INTERVAL = 30 * 1000;
+    private static final long UPDATE_INTERVAL = 120 * 1000;
     /**
      * The fastest rate for active location updates. Updates will never be more frequent
      * than this value, but they may be less frequent.
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     /**
      * Set the minimum displacement between location updates in meters // 5 meters
      */
-    private static final long SMALLEST_DISPLACEMENT = 1;
+    private static final long SMALLEST_DISPLACEMENT = 10;
     /**
      * The max time before batched results are delivered by location services. Results may be
      * delivered sooner than this interval.
@@ -436,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void loadInitialFragment() {
         if (LocationRequestHelper.getRequesting(getApplicationContext())){
-            loadFragment(TrackingFragment.getInstance(LocalDataStorageManager.getInstance().currentTripId()));
+            loadFragment(TrackingFragment.getInstance(LocalDataStorageManager.getInstance().currentTripId(),false));
         }else {
             loadFragment(HomeFragment.getInstance());
         }

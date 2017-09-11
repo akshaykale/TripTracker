@@ -25,6 +25,8 @@ public class MTrip implements TimelineObject {
 
     public String trip_type;
 
+    public String trip_path;
+
     //List<MTripPoint> trip_points;
 
     public MTrip() {
@@ -37,6 +39,7 @@ public class MTrip implements TimelineObject {
         total_distance = 0f;
         image_url = "";
         trip_type = "";
+        trip_path = "";
     }
 
     @Exclude

@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * Created by akshay.kale on 17/08/2017.
@@ -39,6 +40,60 @@ public class FirebaseDataManager {
     public void endCurrentTrip(String tripId){
         LocalDataStorageManager.getInstance().currentTripId(""); //current tripId should be null
         userTripsRef.child(tripId).child("end_time").setValue(System.currentTimeMillis());
+    }
+
+    public void updateTripPath(final String tripId, final String path){
+        LocalDataStorageManager.getInstance().currentTripId(""); //current tripId should be null
+
+        userTripsRef.child(tripId).child("trip_path").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot!=null) {
+                    userTripsRef.child(tripId).child("trip_path").setValue(dataSnapshot.getValue().toString() + path);
+                }else {
+                    userTripsRef.child(tripId).child("trip_path").setValue(path);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void getTripPath(final String tripId, final IFTripsPathListener ifTripsPathListener){
+        userTripsRef.child(tripId).child("trip_path").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (ifTripsPathListener != null){
+                    if (dataSnapshot!= null && !dataSnapshot.getValue().toString().equals("")){
+                        ifTripsPathListener.onTripPathLoadedSuccessfully(dataSnapshot.getValue().toString());
+                    }else {
+                        ifTripsPathListener.onTripPathLoadedSuccessfully("");
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    public void getTripPathUpdates(final String tripId, final IFTripsPathListener ifTripsPathListener){
+        userTripsRef.child(tripId).child("trip_path").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (ifTripsPathListener != null){
+                    if (dataSnapshot!= null && !dataSnapshot.getValue().toString().equals("")){
+                        ifTripsPathListener.onTripPathLoadedSuccessfully(dataSnapshot.getValue().toString());
+                    }else {
+                        ifTripsPathListener.onTripPathLoadedSuccessfully("");
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     public void pushTripPoint(String tripId, MTripPoint tripPoint){

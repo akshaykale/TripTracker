@@ -29,7 +29,7 @@ public class TripDetailsActivity extends AppCompatActivity{
         if (tripId.equals(""))
             return;
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container_trip_details_tracking, TrackingFragment.getInstance(tripId));
+        transaction.replace(R.id.container_trip_details_tracking, TrackingFragment.getInstance(tripId, true));
         //transaction.addToBackStack(null);
         transaction.commit();
     }

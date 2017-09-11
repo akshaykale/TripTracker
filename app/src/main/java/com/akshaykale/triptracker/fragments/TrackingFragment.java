@@ -14,6 +14,7 @@ import com.akshaykale.triptracker.model.MTrip;
 import com.akshaykale.triptracker.model.MTripPoint;
 import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
 import com.akshaykale.triptracker.utils.firebase.IFTripPointsListener;
+import com.akshaykale.triptracker.utils.firebase.IFTripsPathListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -24,6 +25,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,9 +36,10 @@ import butterknife.ButterKnife;
  * Created by akshay.kale on 17/08/2017.
  */
 
-public class TrackingFragment extends Fragment implements OnMapReadyCallback, IFTripPointsListener {
+public class TrackingFragment extends Fragment implements OnMapReadyCallback, IFTripPointsListener, IFTripsPathListener {
 
     public static final String KEY_TRIP_ID = "trip_id";
+    private static final String TRIP_PATH = "trip_path";
 
     private GoogleMap mGoogleMap;
 
@@ -46,6 +51,7 @@ public class TrackingFragment extends Fragment implements OnMapReadyCallback, IF
     TextView tv_distance;
 
     private String tripId = null;
+    private boolean tripPath = true;
 
     private MTrip mTrip = new MTrip();
 
@@ -59,10 +65,11 @@ public class TrackingFragment extends Fragment implements OnMapReadyCallback, IF
 
     Location lastLocation = null;
 
-    public static TrackingFragment getInstance(String trip_id){
+    public static TrackingFragment getInstance(String trip_id, boolean tripPath){
         TrackingFragment trackingFragment = new TrackingFragment();
         Bundle args = new Bundle();
         args.putString(KEY_TRIP_ID, trip_id);
+        args.putBoolean(TRIP_PATH, tripPath);
         trackingFragment.setArguments(args);
         return trackingFragment;
     }
@@ -74,6 +81,7 @@ public class TrackingFragment extends Fragment implements OnMapReadyCallback, IF
         ButterKnife.bind(this, view);
 
         tripId = getArguments().getString(KEY_TRIP_ID);
+        tripPath = getArguments().getBoolean(TRIP_PATH);
 
         firebaseDataManager = new FirebaseDataManager();
 
@@ -91,7 +99,11 @@ public class TrackingFragment extends Fragment implements OnMapReadyCallback, IF
         }
 
         //Get the data from Firebase DB
-        firebaseDataManager.getAllTripPoints(tripId, this);
+        if (tripPath){
+            firebaseDataManager.getTripPath(tripId, this);
+        }else {
+            firebaseDataManager.getAllTripPoints(tripId, this);
+        }
     }
 
     @Override
@@ -137,5 +149,17 @@ public class TrackingFragment extends Fragment implements OnMapReadyCallback, IF
         lastLocation = curLocation;
         String dis = (distance_covered/1000) + " km";
         tv_distance.setText(dis);
+    }
+
+    @Override
+    public void onTripPathLoadedSuccessfully(String path) {
+        List<LatLng> latLngs = PolyUtil.decode(path);
+        if (latLngs.size()<=0)
+            return;
+        routePolylineOptions.addAll(latLngs);
+
+        mGoogleMap.addPolyline(routePolylineOptions);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngs.get(0),13));
+
     }
 }

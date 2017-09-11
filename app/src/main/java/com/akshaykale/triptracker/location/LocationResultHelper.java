@@ -9,11 +9,11 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
-import com.akshaykale.triptracker.utils.LocalDataStorageManager;
-import com.akshaykale.triptracker.model.MTripPoint;
 import com.akshaykale.triptracker.MainActivity;
 import com.akshaykale.triptracker.R;
+import com.akshaykale.triptracker.model.MTripPoint;
+import com.akshaykale.triptracker.utils.LocalDataStorageManager;
+import com.akshaykale.triptracker.utils.firebase.FirebaseDataManager;
 
 import java.text.DateFormat;
 import java.util.Date;
